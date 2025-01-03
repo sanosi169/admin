@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php require "heade.php"; ?>
 <body>
+	<?php 
+	
+	$userImage = "images/" . $_SESSION['user']['image'];
+
+	?>
 <section id="content">
 		<!-- NAVBAR -->
 		<nav>
 			<i class='bx bx-menu' ></i>
-			<a href="#" class="nav-link">Categories</a>
+			<!-- <a href="#" class="nav-link">Categories</a> -->
 			<form action="#">
 				<div class="form-input">
 					<input type="search" placeholder="Search...">
@@ -20,7 +24,7 @@
 				<span class="num">8</span>
 			</a>
 			<a href="#" class="profile">
-				<img src="img/people.png">
+			<img src="<?php echo $userImage; ?>" alt="صورة المستخدم" style="width:100px; height:100px; border-radius:50%;">
 			</a>
 		</nav>
 		<!-- NAVBAR -->

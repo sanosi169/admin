@@ -1,59 +1,95 @@
 <?php
-// require_once 'database.php';
+require_once 'database.php';
 class Role {
         private $db;
-        private $table = 'roles'; // اسم الجدول
+        private $table = 'roles'; 
     
-        // منشئ الكلاس
         public function __construct($db) {
             $this->db = $db;
         }
     
-        // دالة لإضافة دور إلى قاعدة البيانات
         public function create($name) {
-            $sql = "INSERT INTO {$this->table} (name) VALUES (:name)";  // الاستعلام
+            $sql = "INSERT INTO {$this->table} (name) VALUES (:name)";  
+            $stmt = $this->db->prepare($sql);  
+            $stmt->bindParam(':name', $name); 
+    
+            return $stmt->execute();  
+        }
+
+        public function show($id)
+        
+        {
+            // var_dump($id);
+            
+            $sql = 'SELECT * FROM roles WHERE id = :id LIMIT 1'; // استعلام لاستخراج دور واحد بناءً على id
             $stmt = $this->db->prepare($sql);  // تحضير الاستعلام
-            $stmt->bindParam(':name', $name);  // ربط القيمة المدخلة
-    
-            return $stmt->execute();  // تنفيذ الاستعلام
+            $stmt->bindParam(':id', $id);  // ربط المتغير id مع الاستعلام
+            $stmt->execute();  // تنفيذ الاستعلام
+            return $stmt->fetch(PDO::FETCH_ASSOC);  // جلب نتيجة واحدة (دور واحد) كـ مصفوفة مرتبطة
         }
+
+
+                // public function index() {
+                //     try {
+                //         $sql = "SELECT * FROM {$this->table}";
+                //         $stmt = $this->db->connection->prepare($sql);
+
+                        
+                //         $stmt->execute();
+                
+                //         // إرجاع النتائج كمصفوفة
+                //         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+                //     } catch (PDOException $e) {
+                //         // التعامل مع الأخطاء عند فشل الاتصال أو الاستعلام
+                //         echo "Error: " . $e->getMessage();
+                //         return false; // أو يمكنك إعادة مصفوفة فارغة أو نتائج محددة بناءً على احتياجك
+                //     }
+                // }
+                
+
+                public function index() {
+                    try {
+                        $sql = "SELECT * FROM {$this->table}";
+                        $stmt = $this->db->prepare($sql);
+                
+                        // تنفيذ الاستعلام
+                        $stmt->execute();
+                
+                        // طباعة عدد الصفوف المتأثرة (للتأكد من أن هناك بيانات)
+                        // echo "Rows affected: " . $stmt->rowCount() . "<br>";
+                
+                        // إرجاع النتائج كمصفوفة
+                        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                        // طباعة النتائج
+                        // echo "<pre>";
+                        // print_r($results);
+                        // echo "</pre>";
+                
+                        return $results;
+                    } catch (PDOException $e) {
+                        // طباعة الخطأ الكامل
+                        echo "Error: " . $e->getMessage();
+                        return false; 
+                    }
+                }
+
+                public function delete($roleId){
+
+                   $sql = "DELETE FROM {$this->table} WHERE id = :id"; 
+                   $stmt = $this->db->prepare($sql);
+                   $stmt->bindParam(':id', $roleId);  
+                   return $stmt->execute();  
+
+ 
+
+
+                }
+                
+    }
     
 
-    public function read($id = null) {
-        if ($id) {
-            $sql = "SELECT * FROM {$this->table} WHERE id = :id";
-            $stmt = $this->db->connection->prepare($sql);
-            $stmt->bindParam(':id', $id);
-        } else {
-            $sql = "SELECT * FROM {$this->table}";
-            $stmt = $this->db->connection->prepare($sql);
-        }
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+   
 
-    public function update($id, $role_name) {
-        $sql = "UPDATE {$this->table} SET role_name = :role_name WHERE id = :id";
-        $stmt = $this->db->connection->prepare($sql);
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':role_name', $role_name);
-        return $stmt->execute();
-    }
-
-    public function delete($id) {
-        $sql = "DELETE FROM {$this->table} WHERE id = :id";
-        $stmt = $this->db->connection->prepare($sql);
-        $stmt->bindParam(':id', $id);
-        return $stmt->execute();
-    }
-
-    // الحصول على المستخدمين المرتبطين بالدور
-    public function getUsers($role_id) {
-        $sql = "SELECT * FROM user WHERE role_id = :role_id";
-        $stmt = $this->db->connection->prepare($sql);
-        $stmt->bindParam(':role_id', $role_id);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-}
+    
 
